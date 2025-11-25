@@ -1063,3 +1063,19 @@ class ProductRecommendations extends HTMLElement {
 }
 
 customElements.define('product-recommendations', ProductRecommendations);
+
+document.addEventListener("cart:updated", async () => {
+  /* UPDATE PROGRESS BAR */
+  const pbWrapper = document.getElementById("progress-bar-wrapper");
+
+  const pbResponse = await fetch('/?section_id=progress-bar');
+  const pbHTML = await pbResponse.text();
+
+  const newPB = new DOMParser()
+    .parseFromString(pbHTML, "text/html")
+    .getElementById("progress-bar-wrapper");
+
+  if (pbWrapper && newPB) {
+    pbWrapper.innerHTML = newPB.innerHTML;
+  }
+});
