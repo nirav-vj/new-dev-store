@@ -1065,17 +1065,31 @@ class ProductRecommendations extends HTMLElement {
 customElements.define('product-recommendations', ProductRecommendations);
 
 document.addEventListener("cart:updated", async () => {
-  /* UPDATE PROGRESS BAR */
-  const pbWrapper = document.getElementById("progress-bar-wrapper");
+  const wrapper = document.getElementById("progress-bar-wrapper");
 
-  const pbResponse = await fetch('/?section_id=progress-bar');
-  const pbHTML = await pbResponse.text();
+  const response = await fetch('/?section_id=progress-bar');
+  const html = await response.text();
 
-  const newPB = new DOMParser()
-    .parseFromString(pbHTML, "text/html")
+  const newWrapper = new DOMParser()
+    .parseFromString(html, "text/html")
     .getElementById("progress-bar-wrapper");
 
-  if (pbWrapper && newPB) {
-    pbWrapper.innerHTML = newPB.innerHTML;
+  if (wrapper && newWrapper) {
+    wrapper.innerHTML = newWrapper.innerHTML;
+
+    // 🔥 Force animation
+    const bar = wrapper.querySelector(".pb-progress-bar");
+
+    if (bar) {
+      const finalWidth = bar.style.width; // remember the % width
+      bar.style.width = "0%";            // set to 0 first
+
+      // Force a DOM reflow so browser notices change
+      bar.offsetWidth;                   // <-- this line is required
+
+      bar.style.width = finalWidth;      // animate to the real value
+    }
   }
 });
+
+

@@ -3391,6 +3391,8 @@ details-disclosure > details {
   text-align: center;
   font-weight: 600;
   margin-bottom: 12px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
 }
 
 .pb-banner-success {
@@ -3403,24 +3405,38 @@ details-disclosure > details {
   color: #000;
 }
 
-.pb-progress {
-  width: 100%;
-  background: #e5e5e5;
-  height: 12px;
-  border-radius: 20px;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-
 .pb-label-active {
   color: #a6192e;
   font-weight: bold;
 }
 
+.pb-progress {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 14px !important;           /* visible height */
+  min-height: 14px !important;
+  background: #e9ecef !important;    /* light track color */
+  border-radius: 12px !important;
+  overflow: hidden !important;       /* clip the fill */
+  position: relative !important;
+  box-sizing: border-box !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+
+/* Fill (inner) */
 .pb-progress-bar {
-  height: 12px;
-  background: linear-gradient(90deg, #b81a2f, #8c0f22);
-  width: 0%;
-  border-radius: 20px;
-  transition: width .9s cubic-bezier(0.4, 0, 0.2, 1);
+  display: block !important;
+  position: absolute !important;     /* absolute so percent width works reliably */
+  top: 0 !important;
+  left: 0 !important;
+  height: 100% !important;
+  min-height: 14px !important;
+  max-height: 100% !important;
+  border-radius: 12px !important;
+  background: linear-gradient(90deg,#a31729,#8c0f22) !important;
+  box-sizing: border-box !important;
+  transition: width .4s ease-in-out !important;
+  z-index: 10 !important;
+  /* Important: do NOT set width here. width must come from inline style. */
 }

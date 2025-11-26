@@ -573,4 +573,127 @@
       document.querySelector('#cart').submit();
     });
   });
+document.addEventListener('DOMContentLoaded', function () {
+  function isIE() {
+    const ua = window.navigator.userAgent;
+    const msie = ua.indexOf('MSIE ');
+    const trident = ua.indexOf('Trident/');
+    return msie > 0 || trident > 0;
+  }
+
+  if (!isIE()) return;
+  const cartSubmitInput = document.createElement('input');
+  cartSubmitInput.setAttribute('name', 'checkout');
+  cartSubmitInput.setAttribute('type', 'hidden');
+  document.querySelector('#cart').appendChild(cartSubmitInput);
+  document.querySelector('#checkout').addEventListener('click', function (event) {
+    document.querySelector('#cart').submit();
+  });
+});
+
+// Progress bar update function
+function updateProgressBar() {
+  const wrapper = document.getElementById("progress-bar-wrapper");
+  if (!wrapper) return;
+
+  fetch('/?section_id=progress-bar')
+    .then(res => res.text())
+    .then(html => {
+      const newWrapper = new DOMParser()
+        .parseFromString(html, "text/html")
+        .getElementById("progress-bar-wrapper");
+
+      if (wrapper && newWrapper) {
+        wrapper.innerHTML = newWrapper.innerHTML;
+        
+        // Animate the progress bar after a small delay
+        setTimeout(animateProgressBar, 50);
+      }
+    })
+    .catch(error => {
+      console.error('Error updating progress bar:', error);
+    });
+}
+
+// Function to animate the progress bar
+function animateProgressBar() {
+  const bar = document.querySelector('.pb-progress-bar');
+  if (!bar) return;
+
+  const finalWidth = bar.getAttribute('data-width');
+  if (!finalWidth) return;
+
+  // Remove the element and re-add it to force animation
+  const parent = bar.parentElement;
+  const newBar = bar.cloneNode(true);
+  
+  // Set initial state
+  newBar.style.width = '0%';
+  
+  // Replace the element
+  parent.removeChild(bar);
+  parent.appendChild(newBar);
+  
+  // Force reflow
+  void newBar.offsetWidth;
+  
+  // Animate to final width
+  newBar.style.width = finalWidth + '%';
+}
+
+// Listen for cart refresh events
+document.addEventListener("cart:refresh", updateProgressBar);
+
+// Also update the progress bar when cart drawer opens
+document.addEventListener('DOMContentLoaded', function() {
+  // Listen for cart drawer open events
+  const cartDrawer = document.querySelector('cart-drawer');
+  if (cartDrawer) {
+    // Update progress bar when drawer becomes visible
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          if (!cartDrawer.classList.contains('is-empty')) {
+            // Small delay to ensure cart items are loaded
+            setTimeout(updateProgressBar, 100);
+          }
+        }
+      });
+    });
+    
+    observer.observe(cartDrawer, { attributes: true });
+  }
+});
+
+// Setup cart quantity listeners
+function setupCartQuantityListeners() {
+  document.addEventListener('change', function(event) {
+    if (event.target.classList.contains('quantity__input')) {
+      setTimeout(updateProgressBar, 500);
+    }
+  });
+
+  document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('quantity__button') || 
+        event.target.closest('.quantity__button')) {
+      setTimeout(updateProgressBar, 500);
+    }
+  });
+
+  document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('button--tertiary') || 
+        event.target.closest('.button--tertiary') ||
+        event.target.classList.contains('cart-remove-button') ||
+        event.target.closest('cart-remove-button')) {
+      setTimeout(updateProgressBar, 800);
+    }
+  });
+}
+
+// Initialize cart listeners when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setupCartQuantityListeners);
+} else {
+  setupCartQuantityListeners();
+}
 </script>

@@ -1,26 +1,26 @@
+{% if cart.item_count > 0 %}
+
 {% assign offer_amount = settings.free_offer_amount | default: 1500 %}
 {% assign cart_total = cart.total_price | divided_by: 100 %}
-{% assign progress = cart_total | times: 100.0 | divided_by: offer_amount %}
+{% assign progress = cart_total | times: 100 | divided_by: offer_amount | round %}
 
 {% if progress > 100 %}
   {% assign progress = 100 %}
 {% endif %}
 
 <div class="pb-container">
-
+  
   {% if cart_total < offer_amount %}
     {% assign remain = offer_amount | minus: cart_total %}
-    <div class="pb-banner">
-      Add ${{ remain }}.00 more to get the offer!
-    </div>
+    <div class="pb-banner">Add ${{ remain }}.00 more to get the offer!</div>
   {% else %}
-    <div class="pb-banner pb-banner-success">
-      🎉 You unlocked the offer!
-    </div>
+    <div class="pb-banner pb-banner-success">🎉 You unlocked the offer!</div>
   {% endif %}
 
   <div class="pb-progress">
-    <div class="pb-progress-bar" style="width: {{ progress }}%;"></div>
+    <div class="pb-progress-bar" style="width: {{ progress }}% !important;"></div>
   </div>
 
 </div>
+
+{% endif %}
